@@ -69,7 +69,7 @@ const gallery = document.querySelector(`.gallery`);
 const markup = images
   .map(({ preview, original, description }) => {
     return `<li class="gallery-item">
-    <a class="gallery-link" href="large-image.jpg">
+    <a class="gallery-link" href="${original}">
       <img
         class="gallery-image"
         src="${preview}"
@@ -83,27 +83,29 @@ const markup = images
 
 gallery.insertAdjacentHTML(`afterbegin`, markup);
 
-gallery.addEventListener(`click`, (event) => {
+gallery.addEventListener("click", (event) => {
   event.preventDefault();
   const target = event.target;
-  if (target.nodeName !== "IMG") {
-    return;
-  }
+  if (target.nodeName !== "IMG") return;
+
   const originalUrl = target.dataset.source;
   const altText = target.alt || "Image";
 
-  const instance = basicLightbox.create(`
-        <img src="${originalUrl}" alt="${altText}">
-    `);
+  let instance;
 
-  instance.show();
-
-  const closeEsc = (eve) => {
-    if (eve.key === `Escape`) {
+  const closeEsc = (e) => {
+    if (e.key === "Escape") {
       instance.close();
-      document.removeEventListener(`keydown`, closeEsc);
     }
   };
 
-  document.addEventListener(`keydown`, closeEsc);
+  instance = basicLightbox.create(
+    `<img src="${originalUrl}" alt="${altText}">`,
+    {
+      onShow: () => document.addEventListener("keydown", closeEsc),
+      onClose: () => document.removeEventListener("keydown", closeEsc),
+    }
+  );
+
+  instance.show();
 });
