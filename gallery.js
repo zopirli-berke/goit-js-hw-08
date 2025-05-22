@@ -86,7 +86,7 @@ gallery.insertAdjacentHTML(`afterbegin`, markup);
 gallery.addEventListener("click", (event) => {
   event.preventDefault();
   const target = event.target;
-  if (target.nodeName !== "IMG") return;
+  if (target.nodeName.toLowerCase() !== "img") return;
 
   const originalUrl = target.dataset.source;
   const altText = target.alt || "Image";
